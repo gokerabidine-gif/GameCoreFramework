@@ -137,3 +137,18 @@ The recursive Git tree contains 822 entries (675 files) and is not truncated.
 ### Scope and validation boundary
 - This was a new configuration/tree cross-check, not a repeat of the earlier gameplay/source passes.
 - No runtime config or project files were changed. No UE 5.7 editor validation, asset registry scan, cook, Android package, APK, or device test was run.
+
+
+## Twelfth pass: Android project packaging and orientation configuration inventory (2026-11-23)
+
+### Android runtime/package settings inventory
+- The tracked project configuration consists of the inspected DefaultEngine.ini, DefaultGame.ini, DefaultInput.ini, and an empty DefaultEditor.ini; the recursive repository tree contains no additional project-level Android config file.
+- DefaultEngine.ini contains an AndroidFileServerEditor runtime-settings section (USBOnly, development network connection enabled, and bIncludeInShipping=False). This is an editor/development deployment aid, not Android package identity, signing, target SDK/NDK selection, or proof of a shippable Android build.
+- No explicit Android package name, version code/name, minimum/target SDK, architecture selection, signing configuration, or Android-specific packaging profile was found in the inspected project config. Some values may be supplied by engine/project settings outside these tracked files; absence here is not proof that UE cannot package the project.
+- No explicit Android screen-orientation/landscape setting was found in the tracked project config. The current config therefore does not demonstrate a landscape-locked Android build or a landscape-designed touch interface.
+- DefaultInput.ini references Unreal's stock DefaultVirtualJoysticks asset but sets bAlwaysShowTouchInterface=False. This does not implement the requested custom TPS/vehicle touch HUD.
+
+### Safe next action and limits
+- Do not insert guessed Android settings or signing credentials. Package name, SDK/NDK, architecture, orientation, renderer and signing values must be set and validated in the UE 5.7 Android project settings/toolchain and then tested on the target device.
+- The Android File Server section is excluded from shipping by its current setting; it should not be mistaken for a production connection/security configuration.
+- Inventory/source inspection only. No Android config was modified; no Unreal Editor, SDK/NDK validation, Gradle/Turnkey package, APK, install, or device test was run.
