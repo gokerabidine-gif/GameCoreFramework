@@ -224,3 +224,13 @@ The next implementation steps that alter C++, assets, mobile input/UI, rendering
 - Added `Scripts/Build-Android.ps1` to run a guarded UE 5.7 Android BuildCookRun pipeline on a properly provisioned Windows build host. It checks engine version and project/dependency preflight first, supports Development/Shipping and optional Android cook flavor, archives output, and verifies an APK file exists.
 - The build script does not fetch gated Epic/Lyra content, invent plugin files, create signing secrets, install the APK, or claim successful runtime testing.
 - Not executed in the current environment: UE 5.7, the seven Lyra plugin dependencies, Windows RunUAT, and Android SDK/NDK/JDK are not provisioned here. Therefore no APK is available yet.
+
+
+## Fourteenth pass: Lyra Fab access confirmed and mobile-target evidence (2026-11-23)
+
+- The project owner confirmed through a screenshot that Lyra Starter Game is marked **Saved in My Library** on Fab. This confirms account/library entitlement only; the project files have not been downloaded or extracted into this repository, and no local Lyra plugin dependency folders are available from that confirmation.
+- Epic's Lyra documentation says sample projects appear in Fab Library only with a compatible Unreal Engine version installed, then require Launcher > Unreal Engine > Library > Fab Library > Create Project. The official sample description states scalability from mobile to high-end PC, but that is not a substitute for Android packaging/runtime validation of this project.
+- Epic's Android setup documentation still requires a configured Android toolchain; the earlier UE 5.7-specific requirements inventory remains the gating item. Current host constraints remain: no Unreal Editor/UE 5.7, Launcher download environment, Android SDK/NDK/JDK build host, or APK/device test available in this session.
+- Repository tree inspection found no existing GitHub Actions workflow. CI was not added because a runner without the licensed UE engine and the required Lyra dependency content cannot produce a valid build; a placeholder CI workflow would provide misleading status.
+- No source/config/assets changed. No download, compile, cook, package, APK generation, or device test occurred.
+- References: https://dev.epicgames.com/documentation/en-us/unreal-engine/lyra-sample-game-in-unreal-engine ; https://dev.epicgames.com/documentation/en-us/unreal-engine/android-support-for-unreal-engine
