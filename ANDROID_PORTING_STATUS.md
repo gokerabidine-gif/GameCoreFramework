@@ -86,3 +86,25 @@ No Android configuration, touch controls, weapon system, CI workflow, or APK was
 
 ### Next safe action
 Acquire the genuine UE 5.7-compatible dependency plugin source and a compatible UE 5.7 build environment first. Then validate module/platform support and compile before introducing mobile rendering or gameplay changes. Do not commit placeholder plugins or an unexecutable CI workflow.
+
+
+## Third pass: touch-input correction and dependency preparation (2026-11-23)
+
+### Touch input correction
+- A direct read of Config/DefaultInput.ini found DefaultTouchInterface=/Engine/MobileResources/HUD/DefaultVirtualJoysticks.DefaultVirtualJoysticks. The project therefore references Unreal's built-in default virtual joystick asset. The earlier path-name scan did not reveal this because the setting is in an INI file.
+- The same file sets bAlwaysShowTouchInterface=False. This does not establish that the joystick will be visible in every Android runtime/device configuration.
+- This is only the engine's generic virtual joystick reference. It does not demonstrate a custom landscape HUD with the required combat buttons (fire, aim, reload, jump/crouch/interact) or vehicle controls. No custom mobile HUD was verified.
+- Existing input mappings include gamepad movement/look and a handbrake mapping. No project-specific mobile button layout was verified. DefaultInput.ini was intentionally left unchanged.
+
+### Added preparation utility
+- Added Scripts/Prepare-LyraDependencies.ps1 on android-porting.
+- The script validates all seven Lyra plugin folders and their .uplugin JSON descriptors before copying any of them from a local UE 5.7-matched Lyra Plugins directory into this project's Plugins directory.
+- It refuses to overwrite existing destination folders and supports -WhatIf preview.
+- The repository .gitignore already excludes the seven dependency plugin directories, so locally copied dependency source is not accidentally committed or uploaded to GitHub.
+- This is a local dependency-staging helper only. It does not download proprietary/engine-associated dependencies, compile C++, validate Android platform support, or produce an APK.
+
+### Current verified state
+- Target.cs files exist.
+- DefaultTouchInterface points to Unreal's generic virtual joystick; custom mobile HUD remains unverified.
+- Lyra dependency folders remain absent from the repository.
+- No UE build, Android package, or device test has been run.
