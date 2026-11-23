@@ -201,3 +201,11 @@ The next implementation steps that alter C++, assets, mobile input/UI, rendering
 - Asset manager startup loads gameplay cue data and required GameData; missing configured GameData is fatal. The configured asset path must be validated by Unreal's asset registry/cook, which cannot be established from Git tree text alone.
 - Module startup registers plugin Gameplay Tags config path. No module startup/shutdown defect was established.
 - Documentation-only pass. No code/assets changed and no Unreal build, cook, APK, or device test was run. Full evidence is in `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`.
+
+
+## Eleventh pass: map discovery and startup configuration (2026-11-23)
+
+- Found a new Asset Manager scan-path mismatch: `DefaultGame.ini` scans the `Map` primary asset type under `/Game/Maps`, while the tracked showcase map is under the plugin mount `/GameCoreFramework/Sample/Maps`. The startup map is explicitly configured to the plugin path, so this does not by itself prove startup failure; it can affect Map PrimaryAsset discovery/cook workflows. No speculative config change was made without UE 5.7 asset registry and cook validation.
+- Cross-checked the default map, GameInstance, GameMode, AssetManager, UI policy, loading screen, and default experience path references against tracked repository paths. This confirms path-level correspondence only, not successful Unreal asset loading or cooking.
+- The sample project's OnlineSubsystem dependency remains commented out; the existing CommonUser/CommonSession code remains framework scaffolding, not a configured provider/backend.
+- Documentation-only update. No engine/editor, Android SDK/NDK, compile, cook, package, APK, or device test was available/performed. See `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`.
