@@ -45,3 +45,19 @@ This file tracks the Android port without changing the existing `main` branch.
 ## Important
 
 Do not treat a configuration-only change as proof that the project is Android-ready. Do not merge experimental mobile settings into `main` until the project compiles and runs on the target device. Unreal Engine packaging requires a compatible UE installation and Android toolchain; GitHub file edits alone cannot produce or validate an APK.
+
+
+## Additional verification (2026-11-23)
+
+- Epic's Android requirements table lists UE 5.7 with Android Studio Koala 2024.1.2 Patch 1 (September 17, 2024), Android SDK target 35, and Android NDK r27c. These are the version-specific baseline values to verify against the installed UE 5.7 toolchain before packaging; do not substitute UE 5.8/5.9 defaults without checking.
+- Epic's Common User documentation says the plugin source is acquired with the Lyra Starter Game through the Unreal Engine GitHub or the Epic Games Launcher Learn tab. This confirms that these Lyra modules are not ordinary standalone dependencies that should be replaced with arbitrary third-party mirrors.
+- The repository has no .github/workflows/android.yml or .github/workflows/build.yml on this branch (both paths returned 404). No CI build pipeline was verified.
+- The .uproject enables ModelingToolsEditorMode for the Editor target only. This is not itself an Android build blocker, but it does not supply any of the missing Lyra modules.
+
+References:
+- Epic, Android Development Requirements: https://dev.epicgames.com/documentation/unreal-engine/android-development-requirements-for-unreal-engine
+- Epic, Common User Plugin: https://dev.epicgames.com/documentation/unreal-engine/common-user-plugin-in-unreal-engine-for-lyra-sample-game
+
+## Current decision
+
+No Android configuration, touch controls, weapon system, CI workflow, or APK was added in this pass. The required Lyra plugin source and a compatible UE 5.7 + Android toolchain are not present in this GitHub-only workspace. Creating placeholder plugin folders or a workflow that cannot access the licensed engine and dependencies would produce a misleading, non-buildable result. Continue only after the genuine dependencies and a suitable build environment are available.
