@@ -217,3 +217,10 @@ The next implementation steps that alter C++, assets, mobile input/UI, rendering
 - The only Android-specific section found in DefaultEngine.ini is Android File Server editor/development configuration (USBOnly; excluded from shipping). It is not Android packaging or production networking setup.
 - DefaultInput.ini points to Unreal's stock virtual joystick asset but has bAlwaysShowTouchInterface=False; no custom TPS/vehicle touch HUD or landscape layout is established by this config.
 - No guessed settings or credentials were added. These must be configured and validated in UE 5.7 with the Android toolchain and a device. No APK/build/device test was performed. See `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`.
+
+
+## Thirteenth pass: Android packaging entry point added (2026-11-23)
+
+- Added `Scripts/Build-Android.ps1` to run a guarded UE 5.7 Android BuildCookRun pipeline on a properly provisioned Windows build host. It checks engine version and project/dependency preflight first, supports Development/Shipping and optional Android cook flavor, archives output, and verifies an APK file exists.
+- The build script does not fetch gated Epic/Lyra content, invent plugin files, create signing secrets, install the APK, or claim successful runtime testing.
+- Not executed in the current environment: UE 5.7, the seven Lyra plugin dependencies, Windows RunUAT, and Android SDK/NDK/JDK are not provisioned here. Therefore no APK is available yet.
