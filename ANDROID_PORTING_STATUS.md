@@ -171,3 +171,13 @@ The next implementation steps that alter C++, assets, mobile input/UI, rendering
 ### Remaining implementation boundary
 - The next code/content implementation still requires the genuine UE 5.7-compatible Lyra dependency source and a UE 5.7 + Android toolchain. Do not add placeholder plugins, guessed mobile renderer settings, or a CI workflow that cannot access the required engine/dependencies.
 - No Unreal compilation, cooking, packaging, APK generation, or Android device test has been performed.
+
+
+
+## Eighth pass: network security and input lifecycle review (2026-11-23)
+
+- `UGCFGameInstance::Init()` initializes a predictable 32-byte debug key (bytes 0..31). `ReceivedNetworkEncryptionToken()` explicitly describes the sample mechanism as demonstration-only and recommends obtaining a unique key from a secure web service. With `UE_WITH_DTLS=0` in the module build definitions, the default non-DTLS path accepts a non-empty token and returns that predictable key. This is not production network security; do not ship it as the game's encryption design.
+- No secure key service, token validation, identity-bound key exchange, certificate provisioning, or production DTLS configuration was verified. Replacing the hard-coded key with another static value would not fix the problem; a backend trust/key-issuance design is required.
+- A more complete dedicated-server scaffold exists than the earlier GameSession-only inspection showed: `AGCFGameMode::TryDedicatedServerLogin()` uses CommonUser login and then `HostDedicatedServerMatch()` selects an experience and calls CommonSession `HostSession()`. This is framework scaffolding only; online provider, server deployment, experience/map configuration, and end-to-end tests remain unverified.
+- `UGCFPlayerInputBridgeComponent::RemoveInputConfig()` removes the config from its local array but has a TODO for unbinding logic and does not notify the binding manager in the inspected function. Treat this as a potential stale-binding issue to reproduce and fix in Unreal, not as a confirmed runtime defect.
+- Detailed findings are recorded in `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`. This was source inspection only; no code or assets were changed and no build/test/APK was produced.
