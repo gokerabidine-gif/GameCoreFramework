@@ -108,3 +108,17 @@ Acquire the genuine UE 5.7-compatible dependency plugin source and a compatible 
 - DefaultTouchInterface points to Unreal's generic virtual joystick; custom mobile HUD remains unverified.
 - Lyra dependency folders remain absent from the repository.
 - No UE build, Android package, or device test has been run.
+
+
+## Fourth pass: read-only Android prerequisite preflight (2026-11-23)
+
+- Added `Scripts/Test-AndroidPortPrerequisites.ps1` on `android-porting`.
+- The script checks that the project descriptor is valid JSON, that the project still declares Unreal Engine 5.7 and its Runtime game module, and that the GameCoreFramework descriptor is parseable.
+- It checks each of the seven required Lyra plugin descriptor paths and parses available descriptors before reporting success.
+- Where a plugin module declares platform allow/deny lists, it reports Android exclusions as warnings for manual review. An absent allow-list is not treated as proof of Android support.
+- Missing files or malformed JSON cause a non-zero exit code. The script is read-only and does not change project configuration or copy dependencies.
+- This script has been committed to GitHub but has not been executed in PowerShell/Unreal in this environment. Its checks are not a substitute for Unreal Build Tool compilation or Android packaging.
+- The seven Lyra dependency folders are still absent from the repository, so a complete successful preflight is not currently expected.
+
+### Current blocker
+The next implementation steps that alter C++, assets, mobile input/UI, rendering, or packaging require the genuine UE 5.7 Lyra dependencies and an installed UE 5.7 + Android toolchain. Without those inputs, further project edits would be speculative and could make the project less buildable. 
