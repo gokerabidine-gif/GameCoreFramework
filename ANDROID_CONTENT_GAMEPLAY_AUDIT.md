@@ -152,3 +152,12 @@ The recursive Git tree contains 822 entries (675 files) and is not truncated.
 - Do not insert guessed Android settings or signing credentials. Package name, SDK/NDK, architecture, orientation, renderer and signing values must be set and validated in the UE 5.7 Android project settings/toolchain and then tested on the target device.
 - The Android File Server section is excluded from shipping by its current setting; it should not be mistaken for a production connection/security configuration.
 - Inventory/source inspection only. No Android config was modified; no Unreal Editor, SDK/NDK validation, Gradle/Turnkey package, APK, install, or device test was run.
+
+
+## Thirteenth pass: reproducible Android packaging entry point (2026-11-23)
+
+- Added `Scripts/Build-Android.ps1` as a guarded Unreal Automation Tool entry point for a Windows build host.
+- The script requires an explicit EngineRoot and verifies the engine Build.version is UE 5.7, checks required project/script/UAT files, runs the existing descriptor/Lyra dependency preflight, then invokes RunUAT BuildCookRun for Android (Development by default; optional Shipping and ASTC/DXT/ETC2 cook flavor).
+- It archives output under `Build/Android` by default and verifies that an APK exists before reporting success. It does not install the APK or claim device/runtime certification.
+- The script deliberately stops before packaging while any of the seven required Lyra plugin descriptors are absent/invalid. It does not download proprietary engine/sample content, bypass Epic account access, embed signing keys, or fabricate plugin files.
+- This is a committed build entry point only. It was not executed because this environment has no UE 5.7 installation, Windows RunUAT host, Lyra dependencies, or configured Android SDK/NDK/JDK. No APK was generated.
