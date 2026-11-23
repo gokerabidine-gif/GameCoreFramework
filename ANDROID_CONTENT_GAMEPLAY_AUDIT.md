@@ -45,3 +45,29 @@ The recursive Git tree contains 822 entries (675 files) and is not truncated.
 - No UE 5.7 Editor, UnrealBuildTool, Android SDK/NDK, or Android device deployment was available in this audit environment.
 - No source or asset compilation, cooking, packaging, or APK generation was performed.
 - No project runtime behavior is claimed as verified.
+
+
+
+## Eighth pass: network security and input lifecycle review (2026-11-23)
+
+### Network encryption: sample-only, unsafe for production
+- `UGCFGameInstance::Init()` fills `DebugTestEncryptionKey` with the predictable byte sequence 0..31.
+- `ReceivedNetworkEncryptionToken()` explicitly documents the implementation as a demonstration and says a secure service should supply a unique key. With the default `UE_WITH_DTLS=0` compile definition in `GameCoreFramework.Build.cs`, the non-DTLS path accepts any non-empty token and returns that hard-coded debug key.
+- The source itself labels the key/debug approach as not secure. It must not be treated as production network encryption or shipped as the security design for an online game.
+- No key service, token validation, identity-bound session key exchange, certificate provisioning, or production DTLS configuration was verified.
+- Do not replace this with another hard-coded key. A real implementation requires a backend trust model and server-side key issuance/validation.
+
+### Dedicated server flow: framework scaffolding exists
+- `AGCFGameMode::TryDedicatedServerLogin()` checks for dedicated-server mode and the default map, invokes `UCommonUserSubsystem::TryToLoginForOnlinePlay(0)`, and then calls `HostDedicatedServerMatch(ECommonSessionOnlineMode::Online)` after the callback.
+- `HostDedicatedServerMatch()` selects a user-facing experience and calls `UCommonSessionSubsystem::HostSession()`.
+- This is more than a no-op session class: a CommonUser/CommonSession dedicated-server hosting path exists. However, it still depends on a correctly configured online subsystem/provider, server target/deployment, maps/experience assets, and a tested backend. None of those end-to-end requirements has been verified here.
+
+### Input config lifecycle: unfinished removal path
+- `UGCFPlayerInputBridgeComponent::AddInputConfig()` notifies the binding manager to refresh bindings.
+- `RemoveInputConfig()` removes the config from its local list but contains a TODO for unbinding logic and does not notify the binding manager in the inspected implementation.
+- This is a potential stale-binding/lifecycle issue to test and resolve in Unreal; no code change was made without running the input system and understanding binding receipt ownership.
+
+### Scope and safety
+- This pass was a source inspection only. No code, project settings, or assets were changed.
+- The hard-coded key is a production security blocker for online deployment. The input removal TODO is an implementation risk requiring a targeted Editor test.
+- No Unreal compile, dedicated server launch, two-client test, Android build, or APK was run.
