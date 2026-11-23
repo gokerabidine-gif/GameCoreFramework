@@ -209,3 +209,11 @@ The next implementation steps that alter C++, assets, mobile input/UI, rendering
 - Cross-checked the default map, GameInstance, GameMode, AssetManager, UI policy, loading screen, and default experience path references against tracked repository paths. This confirms path-level correspondence only, not successful Unreal asset loading or cooking.
 - The sample project's OnlineSubsystem dependency remains commented out; the existing CommonUser/CommonSession code remains framework scaffolding, not a configured provider/backend.
 - Documentation-only update. No engine/editor, Android SDK/NDK, compile, cook, package, APK, or device test was available/performed. See `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`.
+
+
+## Twelfth pass: Android package/orientation configuration inventory (2026-11-23)
+
+- The tracked project configuration does not currently show explicit Android package identity, version, SDK target/minimum, ABI selection, signing, or Android landscape-orientation settings. These may be supplied through UE settings not represented in the tracked files; this is an inventory finding, not proof packaging is impossible.
+- The only Android-specific section found in DefaultEngine.ini is Android File Server editor/development configuration (USBOnly; excluded from shipping). It is not Android packaging or production networking setup.
+- DefaultInput.ini points to Unreal's stock virtual joystick asset but has bAlwaysShowTouchInterface=False; no custom TPS/vehicle touch HUD or landscape layout is established by this config.
+- No guessed settings or credentials were added. These must be configured and validated in UE 5.7 with the Android toolchain and a device. No APK/build/device test was performed. See `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`.
