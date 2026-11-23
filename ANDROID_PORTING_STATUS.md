@@ -151,3 +151,23 @@ The next implementation steps that alter C++, assets, mobile input/UI, rendering
 - The session implementation was inspected directly: `AGCFGameSession::ProcessAutoLogin()` returns true, while match-start/end overrides only call the superclass. This is not proof of a configured online provider, matchmaking, lobby, or deployed backend.
 - Enhanced Input configurations exist for player, character and vehicle; the default virtual joystick reference exists but `bAlwaysShowTouchInterface=False`. No dedicated mobile combat/vehicle HUD was identified by asset path.
 - No gameplay source, Blueprint asset, or rendering/input configuration was modified in this pass. This was an evidence-focused audit to avoid unsafe assumptions.
+
+
+
+## Seventh pass: reconcile audit history and inspect CI evidence (2026-11-23)
+
+### Corrections and source-of-truth clarification
+- The Sixth-pass gameplay audit supersedes earlier statements in this file that said no weapon-related assets or firing functionality were identified. The repository does contain sample firing/projectile abilities, projectile Blueprint assets, firearm animations, GAS combat attributes, damage execution, and ability routing. A complete inventory/equipment/ammo/swap system remains unverified.
+- The Sixth-pass audit also supersedes any implication that the repository contains no meaningful combat foundation. It does not establish a complete playable shooter or production-ready weapon pipeline.
+- Vehicle sample assets and vehicle control code are present as described in the Sixth-pass audit; Android touch driving and device performance remain untested.
+- The exact session-source review in the Sixth-pass audit is the current evidence for online readiness. No configured provider, matchmaking/lobby flow, deployed backend, or end-to-end multiplayer test has been verified.
+- For detailed file-level evidence and limitations, see `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`.
+
+### CI evidence for inspected latest commit
+- Queried GitHub combined commit status for commit `176960532844db65ad9aaaa9a9a58fd5cf00c390`: no status entries were returned.
+- Queried workflow runs associated with that commit: no pull-request-triggered workflow runs were returned by the available GitHub endpoint.
+- This means no CI result is available as evidence of an Unreal build. It does not prove that no workflow exists for every trigger or that no external build system is used.
+
+### Remaining implementation boundary
+- The next code/content implementation still requires the genuine UE 5.7-compatible Lyra dependency source and a UE 5.7 + Android toolchain. Do not add placeholder plugins, guessed mobile renderer settings, or a CI workflow that cannot access the required engine/dependencies.
+- No Unreal compilation, cooking, packaging, APK generation, or Android device test has been performed.
