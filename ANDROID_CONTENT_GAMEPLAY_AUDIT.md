@@ -118,3 +118,22 @@ The recursive Git tree contains 822 entries (675 files) and is not truncated.
 
 ### Scope
 - Source review and documentation only. No gameplay code or assets changed. No Unreal build, editor validation, cook, Android package, APK, or device test was performed.
+
+
+## Eleventh pass: map discovery and project startup configuration (2026-11-23)
+
+### Map Asset Manager scan-path mismatch
+- `Config/DefaultGame.ini` registers the `Map` primary asset type for scanning only under `/Game/Maps`.
+- The tracked sample map is `Plugins/GameCoreFramework/Content/Sample/Maps/L_GCF_Showcase.umap`, whose plugin content mount path is `/GameCoreFramework/Sample/Maps/L_GCF_Showcase`.
+- `Config/DefaultEngine.ini` uses that plugin-mounted path directly for both `EditorStartupMap` and `GameDefaultMap`, so the configured startup map path and the tracked map asset agree.
+- However, the current `Map` PrimaryAsset scan directory does not include the plugin-mounted sample map. Therefore, the sample map is not covered by that configured directory scan. This may affect workflows that discover or address maps through the `Map` PrimaryAsset type; direct startup-map loading is separately configured and should not be conflated with Asset Manager discovery.
+- No config change was made: broadening the scan directory or adding a second scan entry needs validation in UE 5.7, including asset registry results, duplicate primary asset IDs, and cook/package behavior.
+
+### Project/plugin startup configuration cross-check
+- `GCF_SampleProject.uproject` declares EngineAssociation 5.7 and the sample runtime module. The GameCoreFramework plugin is present in the project plugin directory and its descriptor declares `CanContainContent: true`.
+- The default map, GameInstance, global GameMode, AssetManager, default UI policy, loading screen, and default experience references in the inspected config resolve to matching tracked asset/source paths by name/path in the repository tree. This is path-level consistency only; Unreal asset loading and cooking have not been executed.
+- The project Build.cs leaves the OnlineSubsystem dependency commented out. This is consistent with the existing finding that a CommonUser/CommonSession hosting scaffold does not by itself establish a configured online provider. No provider was selected or enabled in this pass.
+
+### Scope and validation boundary
+- This was a new configuration/tree cross-check, not a repeat of the earlier gameplay/source passes.
+- No runtime config or project files were changed. No UE 5.7 editor validation, asset registry scan, cook, Android package, APK, or device test was run.
