@@ -71,3 +71,28 @@ The recursive Git tree contains 822 entries (675 files) and is not truncated.
 - This pass was a source inspection only. No code, project settings, or assets were changed.
 - The hard-coded key is a production security blocker for online deployment. The input removal TODO is an implementation risk requiring a targeted Editor test.
 - No Unreal compile, dedicated server launch, two-client test, Android build, or APK was run.
+
+
+
+## Ninth pass: mobile rendering and input implementation review (2026-11-23)
+
+### Mobile rendering configuration
+- The inspected `Config/DefaultEngine.ini` explicitly enables ray tracing, ray-tracing proxies, Substrate, virtual shadow maps, mesh distance fields, and desktop-class targeting. Windows uses DX12/SM6; Linux and Mac target SM6.
+- No Android-specific renderer/RHI profile or mobile scalability profile was verified in this config.
+- These settings are desktop-oriented and require an intentional Android rendering strategy. They are not proof that Android packaging is impossible, but they are a material compatibility/performance risk for mobile and must be validated against UE 5.7 Android capabilities and target devices.
+- No renderer settings were changed without an actual UE 5.7 Android build and device test.
+
+### Input helper implementation status
+- `UGCFInputBindingManagerComponent` has its own binding lifecycle and directly adds/removes pawn mapping contexts through `UEnhancedInputLocalPlayerSubsystem`.
+- Separately, `UGCFInputComponent::AddInputMappings()` and `RemoveInputMappings()` contain commented example loops and perform no mapping operation in their current implementation. This is a stub/helper limitation; whether these methods are called by current gameplay flows must be checked in an Unreal project build.
+- The player input bridge's `RemoveInputConfig()` still removes only the local config entry and has a TODO for unbinding. The binding manager's explicit pawn-possession cleanup does remove pawn-dependent bindings, but it does not by itself prove dynamic per-config removal is correct.
+- Vehicle control code inspected here binds only handbrake and headlight actions. Throttle/brake and steering are handled through the movement path and vehicle input configuration; no touch widget or on-screen vehicle control layout was found in this source review.
+
+### Mobile gameplay/UI conclusion
+- The project has Enhanced Input abstractions and a default virtual joystick reference in DefaultInput.ini, but no verified custom touch HUD for TPS combat and driving. A virtual joystick reference alone does not supply fire/aim/reload/crouch/jump/interact/vehicle pedal/steering buttons.
+- No landscape-specific UI layout or Android touch interaction test was verified.
+- These are implementation gaps, not something that can be safely solved by adding arbitrary config entries without knowing the actual Input Actions, mapping contexts, pawn data, and widget assets.
+
+### Scope
+- Source/config inspection only; no gameplay code or renderer settings were changed.
+- No Unreal compile, cook, Android package, APK, or device test was performed.
