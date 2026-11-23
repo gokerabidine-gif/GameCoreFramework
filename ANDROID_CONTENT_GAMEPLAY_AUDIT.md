@@ -161,3 +161,12 @@ The recursive Git tree contains 822 entries (675 files) and is not truncated.
 - It archives output under `Build/Android` by default and verifies that an APK exists before reporting success. It does not install the APK or claim device/runtime certification.
 - The script deliberately stops before packaging while any of the seven required Lyra plugin descriptors are absent/invalid. It does not download proprietary engine/sample content, bypass Epic account access, embed signing keys, or fabricate plugin files.
 - This is a committed build entry point only. It was not executed because this environment has no UE 5.7 installation, Windows RunUAT host, Lyra dependencies, or configured Android SDK/NDK/JDK. No APK was generated.
+
+
+## Fourteenth pass: external access and Android support evidence (2026-11-23)
+
+- Owner-side screenshot confirms Lyra Starter Game is saved in the owner's Fab Library. This establishes entitlement, not possession of downloaded project files or dependency plugin folders in this repo.
+- Epic's Lyra install guide requires a compatible engine version in the Launcher Library before the sample is shown, then Create Project; the guide describes mobile-to-high-end scalability. These are vendor statements, not a successful GCF Android build.
+- No GitHub Actions workflow exists in the inspected branch tree. We did not add a CI workflow because the required Unreal Engine installation and Lyra content are not available to a generic runner; a workflow that only checks files or pretends to build would not validate Android output.
+- This pass added documentation only. No build, cook, package, APK, or device run was possible.
+- Sources: https://dev.epicgames.com/documentation/en-us/unreal-engine/lyra-sample-game-in-unreal-engine ; https://dev.epicgames.com/documentation/en-us/unreal-engine/android-support-for-unreal-engine
