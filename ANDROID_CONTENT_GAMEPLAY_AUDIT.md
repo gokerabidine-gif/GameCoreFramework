@@ -96,3 +96,25 @@ The recursive Git tree contains 822 entries (675 files) and is not truncated.
 ### Scope
 - Source/config inspection only; no gameplay code or renderer settings were changed.
 - No Unreal compile, cook, Android package, APK, or device test was performed.
+
+
+
+## Tenth pass: experience and Game Feature failure-path audit (2026-11-23)
+
+### Confirmed failure-handling gap
+- In `GCFExperienceManagerComponent::OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result)`, the callback parameter `Result` is not inspected. The code decrements the outstanding plugin count and calls `OnExperienceFullLoadCompleted()` when the count reaches zero regardless of whether a Game Feature plugin load/activation succeeded.
+- Consequently, a failed plugin operation is not surfaced as a failed experience state here; the experience can continue into action activation and eventually report itself Loaded despite a plugin failure. This is a source-level failure-path defect and a high-priority fix candidate.
+- The component already has a TODO to represent a completed-but-failed state rather than relying on checks. No change was made because failure propagation affects loading UI, multiplayer replication, action rollback, and plugin reference counting; it needs an Unreal test harness.
+
+### Teardown and lifecycle risks
+- `EndPlay()` deactivates referenced Game Feature plugins before invoking each experience/action-set action's deactivation and unregister callbacks. The code itself contains a TODO that plugin teardown should be FILO and a TODO for partially-loaded state handling.
+- The deactivation path logs an error when actions register asynchronous pausers, noting that asynchronous deactivation is not fully supported.
+- These limitations matter for seamless experience transitions, failed/partial startup, and cleanup during travel or disconnect. They are not proof of a current crash, but must be covered by runtime tests before production multiplayer use.
+
+### Startup and asset management
+- `UGCFAssetManager::StartInitialLoading()` synchronously executes startup jobs for gameplay cue initialization and required base GameData loading. Failure to load the configured GameData asset is intentionally fatal.
+- The project config points at `/GameCoreFramework/DA_DefaultGameData`; the repository tree must contain the matching cooked source asset and dependencies for a real package. Source inspection alone cannot validate the Unreal asset registry or cook output.
+- `GameCoreFrameworkModule::StartupModule()` registers the plugin's `Config/Tags` directory with GameplayTagsManager. No startup/shutdown defect was established in this pass.
+
+### Scope
+- Source review and documentation only. No gameplay code or assets changed. No Unreal build, editor validation, cook, Android package, APK, or device test was performed.
