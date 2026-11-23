@@ -181,3 +181,13 @@ The next implementation steps that alter C++, assets, mobile input/UI, rendering
 - A more complete dedicated-server scaffold exists than the earlier GameSession-only inspection showed: `AGCFGameMode::TryDedicatedServerLogin()` uses CommonUser login and then `HostDedicatedServerMatch()` selects an experience and calls CommonSession `HostSession()`. This is framework scaffolding only; online provider, server deployment, experience/map configuration, and end-to-end tests remain unverified.
 - `UGCFPlayerInputBridgeComponent::RemoveInputConfig()` removes the config from its local array but has a TODO for unbinding logic and does not notify the binding manager in the inspected function. Treat this as a potential stale-binding issue to reproduce and fix in Unreal, not as a confirmed runtime defect.
 - Detailed findings are recorded in `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`. This was source inspection only; no code or assets were changed and no build/test/APK was produced.
+
+
+
+## Ninth pass: mobile rendering and input implementation review (2026-11-23)
+
+- `Config/DefaultEngine.ini` enables ray tracing, ray-tracing proxies, Substrate, virtual shadow maps, mesh distance fields, and desktop-class targeting. Windows targets DX12/SM6; Linux and Mac target SM6. No Android-specific renderer/RHI or mobile scalability profile was verified. These are mobile compatibility/performance risks requiring an intentional UE 5.7 Android rendering configuration and device validation; they do not alone prove packaging impossible.
+- `UGCFInputBindingManagerComponent` independently manages pawn mapping contexts directly through Enhanced Input. However, `UGCFInputComponent::AddInputMappings()` and `RemoveInputMappings()` are currently stub-like: their example loops are commented out and the functions do not add/remove mappings. Actual call-site usage must be checked in the editor/runtime.
+- `UGCFPlayerInputBridgeComponent::RemoveInputConfig()` still lacks explicit unbinding/manager notification. Pawn-possession cleanup exists in the manager, but does not establish correct dynamic per-config removal.
+- The inspected vehicle control component binds handbrake and headlight actions; driving axes are handled elsewhere. No verified on-screen touch HUD or landscape control layout was found. Default virtual joystick config does not provide the full TPS/vehicle touch UI.
+- This pass changed documentation only. No code/config settings changed; no Unreal build, cook, Android package, APK, or device test was performed. See `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`.
