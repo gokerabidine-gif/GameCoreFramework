@@ -191,3 +191,13 @@ The next implementation steps that alter C++, assets, mobile input/UI, rendering
 - `UGCFPlayerInputBridgeComponent::RemoveInputConfig()` still lacks explicit unbinding/manager notification. Pawn-possession cleanup exists in the manager, but does not establish correct dynamic per-config removal.
 - The inspected vehicle control component binds handbrake and headlight actions; driving axes are handled elsewhere. No verified on-screen touch HUD or landscape control layout was found. Default virtual joystick config does not provide the full TPS/vehicle touch UI.
 - This pass changed documentation only. No code/config settings changed; no Unreal build, cook, Android package, APK, or device test was performed. See `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`.
+
+
+
+## Tenth pass: experience/Game Feature failure-path audit (2026-11-23)
+
+- Confirmed defect candidate: `UGCFExperienceManagerComponent::OnGameFeaturePluginLoadComplete(const FResult& Result)` ignores `Result`. When the outstanding callback count reaches zero, it proceeds to full experience loading/actions even if a Game Feature plugin failed. The experience may therefore be marked Loaded without all requested plugins successfully activating. This needs explicit failure state, rollback/reference-count handling, and Unreal tests; no speculative code patch was made.
+- Teardown has documented lifecycle gaps: `EndPlay()` deactivates plugin URLs before action deactivation/unregistration; source comments mark FILO teardown and partially-loaded-state handling as TODOs. Async action deactivation pausers are not fully supported and log an error.
+- Asset manager startup loads gameplay cue data and required GameData; missing configured GameData is fatal. The configured asset path must be validated by Unreal's asset registry/cook, which cannot be established from Git tree text alone.
+- Module startup registers plugin Gameplay Tags config path. No module startup/shutdown defect was established.
+- Documentation-only pass. No code/assets changed and no Unreal build, cook, APK, or device test was run. Full evidence is in `ANDROID_CONTENT_GAMEPLAY_AUDIT.md`.
