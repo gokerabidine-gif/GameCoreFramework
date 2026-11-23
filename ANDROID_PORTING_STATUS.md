@@ -122,3 +122,20 @@ Acquire the genuine UE 5.7-compatible dependency plugin source and a compatible 
 
 ### Current blocker
 The next implementation steps that alter C++, assets, mobile input/UI, rendering, or packaging require the genuine UE 5.7 Lyra dependencies and an installed UE 5.7 + Android toolchain. Without those inputs, further project edits would be speculative and could make the project less buildable. 
+
+
+## Fifth pass: project activation and module dependency review (2026-11-23)
+
+### Newly verified from the actual project descriptors and build rules
+- `GCF_SampleProject.uproject` currently lists only `ModelingToolsEditorMode`, restricted to the Editor target. It does not explicitly list `GameCoreFramework` as an enabled project plugin.
+- The repository README's setup instructions separately tell the user to open Edit > Plugins and ensure GameCoreFramework and its dependencies are enabled. Therefore plugin activation is a manual setup step in the documented workflow and is not currently recorded in the project descriptor.
+- `GameCoreFramework.uplugin` declares the framework Runtime module at `PreDefault` and lists the framework's plugin dependencies, including the Lyra modules. The required Lyra plugin source directories are still absent.
+- `GameCoreFramework.Build.cs` statically references modules including GameplayMessageRuntime, ChaosVehicles, Mover, GameplayAbilities, GameFeatures, ModularGameplay, CommonLoadingScreen, CommonUser, CommonUI, CommonGame, CommonInput, GameSubtitles, OnlineSubsystem, OnlineSubsystemUtils, UIExtension, and others. All must resolve in the selected UE 5.7 installation or supplied plugin source for a successful build.
+- The sample game's own `GCF_SampleProject.Build.cs` currently declares only Core, CoreUObject, Engine, InputCore, and EnhancedInput. Its OnlineSubsystem dependency remains commented out. This is further evidence that a working multiplayer provider/session configuration is not established by the sample game module alone.
+- `DefaultGame.ini` includes a `DistillSettings` wildcard for `Weapons/*`. This indicates a planned/expected content category but does not prove that a complete weapon system or weapon assets are present; the earlier path scan did not identify a dedicated weapon system.
+- The project input config sets `bAlwaysShowTouchInterface=False`; the default virtual joystick reference remains present. No custom combat or vehicle touch HUD was verified.
+
+### Safe decision
+- Did not change `.uproject` to force-enable GameCoreFramework: its required Lyra plugins are still missing, and enabling a plugin with unresolved required dependencies before staging the genuine UE 5.7 dependency set risks turning the project into an immediate plugin-load failure.
+- Did not add online provider settings, Android renderer overrides, or touch mappings without a build/test environment.
+- Next meaningful gate remains staging the official UE 5.7-compatible Lyra dependencies, then enabling the framework plugin in the Editor, saving the project descriptor, and running an Editor Development build before Android-specific changes.
