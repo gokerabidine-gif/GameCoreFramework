@@ -139,3 +139,15 @@ The next implementation steps that alter C++, assets, mobile input/UI, rendering
 - Did not change `.uproject` to force-enable GameCoreFramework: its required Lyra plugins are still missing, and enabling a plugin with unresolved required dependencies before staging the genuine UE 5.7 dependency set risks turning the project into an immediate plugin-load failure.
 - Did not add online provider settings, Android renderer overrides, or touch mappings without a build/test environment.
 - Next meaningful gate remains staging the official UE 5.7-compatible Lyra dependencies, then enabling the framework plugin in the Editor, saving the project descriptor, and running an Editor Development build before Android-specific changes.
+
+
+## Sixth pass: full repository tree and gameplay asset audit (2026-11-23)
+
+- Inspected the complete, non-truncated recursive Git tree: 822 entries / 675 files.
+- Added `ANDROID_CONTENT_GAMEPLAY_AUDIT.md` with verified asset/source inventory and implementation gates.
+- Important refinement to the earlier filename scan: the project **does contain** sample firing/projectile abilities (`GA_Fire`, `GA_CreateProjectile`), projectile Blueprint assets, pistol/rifle fire and reload animations, combat attributes, damage execution, and GAS ability routing. The earlier scan that found no weapon-related filenames was incomplete.
+- However, no complete inventory/equipment/ammunition/weapon swapping system was verified. Binary Blueprint graphs were not decoded or run, so their exact functionality remains unconfirmed.
+- Vehicle evidence is broader than previously summarized: both OffroadCar and SportsCar sample asset sets, a vehicle pawn/control component, vehicle input config/context, handbrake and headlight actions are present. This is a vehicle gameplay foundation, not proof of mobile touch driving or Android compatibility.
+- The session implementation was inspected directly: `AGCFGameSession::ProcessAutoLogin()` returns true, while match-start/end overrides only call the superclass. This is not proof of a configured online provider, matchmaking, lobby, or deployed backend.
+- Enhanced Input configurations exist for player, character and vehicle; the default virtual joystick reference exists but `bAlwaysShowTouchInterface=False`. No dedicated mobile combat/vehicle HUD was identified by asset path.
+- No gameplay source, Blueprint asset, or rendering/input configuration was modified in this pass. This was an evidence-focused audit to avoid unsafe assumptions.
