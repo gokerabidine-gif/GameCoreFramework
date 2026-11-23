@@ -61,3 +61,28 @@ References:
 ## Current decision
 
 No Android configuration, touch controls, weapon system, CI workflow, or APK was added in this pass. The required Lyra plugin source and a compatible UE 5.7 + Android toolchain are not present in this GitHub-only workspace. Creating placeholder plugin folders or a workflow that cannot access the licensed engine and dependencies would produce a misleading, non-buildable result. Continue only after the genuine dependencies and a suitable build environment are available.
+
+
+## Second pass: project build and configuration audit (2026-11-23)
+
+### Newly verified
+- Both Unreal target rules already exist:
+  - Source/GCF_SampleProject.Target.cs (Game target)
+  - Source/GCF_SampleProjectEditor.Target.cs (Editor target)
+  Both set BuildSettingsVersion.V6 and IncludeOrderVersion.Unreal5_7. Do not create duplicate target files.
+- The README's setup instructions explicitly require copying the seven Lyra-related plugins into this repository's Plugins directory. The current repository Plugins directory audit previously found only GameCoreFramework, so this prerequisite remains unmet.
+- DefaultGame.ini references CommonLoadingScreen's LoadingScreenWidget class and several GameCoreFramework content assets. This confirms CommonLoadingScreen is an active project dependency, not just an unused descriptor entry.
+- DefaultEngine.ini already contains an AndroidFileServer runtime settings section, but that only configures the file-server plugin. It does not mean Android target platform, mobile renderer, Android SDK/NDK, or packaging are configured.
+- The existing DefaultEngine.ini enables ray tracing, Substrate, virtual shadow maps, and desktop-class hardware targeting, and contains desktop SM6 RHI targets for Windows/Linux/Mac. These settings require a deliberate mobile-renderer compatibility review; blindly appending Android settings is not a safe substitute for testing the project's materials, lighting, and plugins.
+- The Common User Epic documentation currently describes Common User as distributed with Lyra and also as a standalone plugin. The repository README nevertheless instructs obtaining the Lyra-compatible plugin set. Use the UE 5.7-matched official source, not arbitrary mirrors.
+
+### Corrected implementation status
+- Game and Editor Target.cs files: present.
+- AndroidFileServer settings: present, but not proof of Android readiness.
+- Android build pipeline: not found.
+- Lyra dependency set: not present in this repository's Plugins folder.
+- Android renderer/device profiles: not verified.
+- Touch HUD, weapon/inventory gameplay, APK build, and device tests: not implemented or verified.
+
+### Next safe action
+Acquire the genuine UE 5.7-compatible dependency plugin source and a compatible UE 5.7 build environment first. Then validate module/platform support and compile before introducing mobile rendering or gameplay changes. Do not commit placeholder plugins or an unexecutable CI workflow.
